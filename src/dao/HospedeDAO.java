@@ -19,7 +19,7 @@ public class HospedeDAO {
 
 	private Connection connection;
 	
-	private enum SQL_COMANDOS{
+	private enum SQL_COMANDOS_SIMPLES{
 		
 		SALVAR_HOSPEDE("insert into tbl_hospede(hos_nome, hos_sobrenome, hos_data_nascimento,"
 				+ "hos_nacionalidade, hos_telefone)"
@@ -34,7 +34,7 @@ public class HospedeDAO {
 		DELETAR_POR_ID("delete from tbl_hospede where hos_id = ?");
 
 		
-		SQL_COMANDOS(String comando) {
+		SQL_COMANDOS_SIMPLES(String comando) {
 					
 					this.comando = comando;
 				}
@@ -58,7 +58,7 @@ public class HospedeDAO {
 		
 		try {
 			List<Hospede> hospedes = new ArrayList<Hospede>();
-			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS.DETALHAR_HOSPEDES.toString())){
+			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS_SIMPLES.DETALHAR_HOSPEDES.toString())){
 				
 				pstm.execute();
 				
@@ -87,7 +87,7 @@ public class HospedeDAO {
 		
 		try {
 			
-			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS.DELETAR_POR_ID.toString())){
+			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS_SIMPLES.DELETAR_POR_ID.toString())){
 				
 				pstm.setInt(1, hospedeIndice);
 				pstm.execute();
@@ -178,7 +178,7 @@ public class HospedeDAO {
 		
 		try {
 			
-			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS.SALVAR_HOSPEDE.toString(), Statement.RETURN_GENERATED_KEYS)){
+			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS_SIMPLES.SALVAR_HOSPEDE.toString(), Statement.RETURN_GENERATED_KEYS)){
 				
 				pstm.setString(1, hospede.getNome());
 				pstm.setString(2, hospede.getSobrenome());
@@ -202,7 +202,7 @@ public class HospedeDAO {
 			}
 		}
 		catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -38,6 +38,6 @@ public class Nacionalidade {
 	@Override
 	public String toString() {
 		
-		return String.format("nacionalidade: id %d - nome: %s", this.id, this.nome);
+		return this.nome;
 	}
 }

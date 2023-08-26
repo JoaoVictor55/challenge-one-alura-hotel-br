@@ -16,7 +16,7 @@ public class TesteInsercaoHospede {
 		
 		HospedeController controller = new HospedeController();
 			
-		DadosCadastroHospede dados = new DadosCadastroHospede("Ricardo", "Silvaaa", LocalDate.now().toString(),new Nacionalidade(1, "americano") , "12345", 1);
+		DadosCadastroHospede dados = new DadosCadastroHospede("Ricardo", "Silvaaa", LocalDate.now().toString(),new Nacionalidade(74, "alemão") , "12345", 1);
 		
 		controller.cadastrarHospede(dados);
 		

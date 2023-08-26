@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -25,8 +26,12 @@ import javax.swing.border.EmptyBorder;
 import com.toedter.calendar.JDateChooser;
 
 import controller.HospedeController;
+import controller.NacionalidadeController;
+import dao.NacionalidadeDAO;
 import domain.hospede.DadosCadastroHospede;
 import domain.nacionalidade.Nacionalidade;
+
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class RegistroHospede extends JFrame {
@@ -69,6 +74,10 @@ public class RegistroHospede extends JFrame {
 		
 		//inicializa o controller
 		hospedeController = new HospedeController();
+		List<Nacionalidade> nacionalidades = new NacionalidadeController().listarNacionalidades();
+		/*List<Nacionalidade> nacionalidades = new ArrayList<Nacionalidade>();
+		nacionalidades.add(new Nacionalidade(74, "Brasileiro"));
+		nacionalidades.add(new Nacionalidade(75, "Gringo"));*/
 		
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistroHospede.class.getResource("/imagenes/lOGO-50PX.png")));
@@ -193,7 +202,14 @@ public class RegistroHospede extends JFrame {
 		txtNacionalidade.setBounds(560, 350, 289, 36);
 		txtNacionalidade.setBackground(SystemColor.text);
 		txtNacionalidade.setFont(new Font("Roboto", Font.PLAIN, 16));
-		txtNacionalidade.setModel(new DefaultComboBoxModel(new String[] {"alemão", "andorrano", "angolano", "antiguano", "saudita", "argelino", "argentino", "armênio", "australiano", "austríaco", "azerbaijano", "bahamense", "bangladês, bangladense", "barbadiano", "bahreinita", "belga", "belizenho", "beninês", "belarusso", "boliviano", "bósnio", "botsuanês", "brasileiro", "bruneíno", "búlgaro", "burkineonse, burkinabé", "burundês", "butanês", "cabo-verdiano", "camerounês", "cambojano", "catariano", "canadense", "cazaque", "chadiano", "chileno", "chinês", "cipriota", "colombiano", "comoriano", "congolês", "congolês", "sul-coreano", "norte-coreano", "costa-marfinense, marfinense", "costa-ricense", "croata", "cubano", "dinamarquês", "djiboutiano", "dominiquense", "egípcio", "salvadorenho", "emiradense, emirático", "equatoriano", "eritreu", "eslovaco", "esloveno", "espanhol", "estadunidense, (norte-)americano", "estoniano", "etíope", "fijiano", "filipino", "finlandês", "francês", "gabonês", "gambiano", "ganês ou ganense", "georgiano", "granadino", "grego", "guatemalteco", "guianês", "guineense", "guineense, bissau-guineense", "equato-guineense", "haitiano", "hondurenho", "húngaro", "iemenita", "cookiano", "marshallês", "salomonense", "indiano", "indonésio", "iraniano", "iraquiano", "irlandês", "islandês", "34", "jamaicano", "japonês", "jordaniano", "kiribatiano", "kuwaitiano", "laosiano", "lesotiano", "letão", "libanês", "liberiano", "líbio", "liechtensteiniano", "lituano", "luxemburguês", "macedônio", "madagascarense", "malásio37", "malawiano", "maldivo", "maliano", "maltês", "marroquino", "mauriciano", "mauritano", "mexicano", "myanmarense", "micronésio", "moçambicano", "moldovo", "monegasco", "mongol", "montenegrino", "namibiano", "nauruano", "nepalês", "nicaraguense", "nigerino", "nigeriano", "niuiano", "norueguês", "neozelandês", "omani", "neerlandês", "palauano", "palestino", "panamenho", "papua, papuásio", "paquistanês", "paraguaio", "peruano", "polonês, polaco", "português", "queniano", "quirguiz", "britânico", "centro-africano", "tcheco", "dominicano", "romeno", "ruandês", "russo", "samoano", "santa-lucense", "são-cristovense", "samarinês", "santomense", "são-vicentino", "seichelense", "senegalês", "sérvio", "singapurense", "sírio", "somaliano, somali", "sri-lankês", "suázi", "sudanês", "sul-sudanês", "sueco", "suíço", "surinamês", "tajique", "tailandês", "tanzaniano", "timorense", "togolês", "tonganês", "trinitário", "tunisiano", "turcomeno", "turco", "tuvaluano", "ucraniano", "ugandês", "uruguaio", "uzbeque", "vanuatuense", "vaticano", "venezuelano", "vietnamita", "zambiano", "zimbabueano"}));
+		DefaultComboBoxModel combobox = new DefaultComboBoxModel();
+		
+		for(Nacionalidade nac : nacionalidades) {
+			
+			combobox.addElement(nac);
+		}
+		
+		txtNacionalidade.setModel(combobox);
 		contentPane.add(txtNacionalidade);
 		
 		JLabel lblNome = new JLabel("NOME");
@@ -297,8 +313,8 @@ public class RegistroHospede extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				 
 						
-				DadosCadastroHospede cadastroHospede = new DadosCadastroHospede(txtNome.getText(), txtSobrenome.getText(),new SimpleDateFormat("yyyy-MM-dd").format(txtDataN.getDate()) , new Nacionalidade(1, "americano"),txtTelefone.getText() ,1 );
-				System.out.println(cadastroHospede);
+				DadosCadastroHospede cadastroHospede = new DadosCadastroHospede(txtNome.getText(), txtSobrenome.getText(),new SimpleDateFormat("yyyy-MM-dd").format(txtDataN.getDate()) ,nacionalidades.get(txtNacionalidade.getSelectedIndex()) ,txtTelefone.getText() ,1 );
+				//System.out.println(cadastroHospede);
 				hospedeController.cadastrarHospede(cadastroHospede);
 			}
 		});

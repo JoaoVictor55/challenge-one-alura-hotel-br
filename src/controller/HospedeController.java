@@ -36,6 +36,7 @@ public class HospedeController {
 		
 		return hosdao.listarHospedes();
 	}
+	
 
 	public void atualizar(Integer id, String nome, String sobrenome, String datanascimento, Nacionalidade nacionalidade,
 			String telefone) {
