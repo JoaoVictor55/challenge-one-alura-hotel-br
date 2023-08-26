@@ -1,29 +1,32 @@
 package views;
 
-import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JTextField;
 import java.awt.Color;
-import com.toedter.calendar.JDateChooser;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import java.awt.EventQueue;
 import java.awt.Font;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import java.awt.SystemColor;
-import java.awt.event.ActionListener;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.Format;
-import java.awt.event.ActionEvent;
-import java.awt.Toolkit;
-import javax.swing.SwingConstants;
+import java.text.SimpleDateFormat;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import com.toedter.calendar.JDateChooser;
+
+import controller.HospedeController;
+import domain.hospede.DadosCadastroHospede;
+import domain.nacionalidade.Nacionalidade;
 
 @SuppressWarnings("serial")
 public class RegistroHospede extends JFrame {
@@ -38,6 +41,10 @@ public class RegistroHospede extends JFrame {
 	private JLabel labelExit;
 	private JLabel labelAtras;
 	int xMouse, yMouse;
+	
+	//classes para cadastro de hospede
+	
+	private HospedeController hospedeController; 
 
 	/**
 	 * Launch the application.
@@ -59,6 +66,10 @@ public class RegistroHospede extends JFrame {
 	 * Create the frame.
 	 */
 	public RegistroHospede() {
+		
+		//inicializa o controller
+		hospedeController = new HospedeController();
+		
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(RegistroHospede.class.getResource("/imagenes/lOGO-50PX.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,7 +165,7 @@ public class RegistroHospede extends JFrame {
 		labelAtras.setBounds(0, 0, 53, 36);
 		btnAtras.add(labelAtras);
 		
-		
+		//nome
 		txtNome = new JTextField();
 		txtNome.setFont(new Font("Roboto", Font.PLAIN, 16));
 		txtNome.setBounds(560, 135, 285, 33);
@@ -284,6 +295,11 @@ public class RegistroHospede extends JFrame {
 		btnsalvar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				 
+						
+				DadosCadastroHospede cadastroHospede = new DadosCadastroHospede(txtNome.getText(), txtSobrenome.getText(),new SimpleDateFormat("yyyy-MM-dd").format(txtDataN.getDate()) , new Nacionalidade(1, "americano"),txtTelefone.getText() ,1 );
+				System.out.println(cadastroHospede);
+				hospedeController.cadastrarHospede(cadastroHospede);
 			}
 		});
 		btnsalvar.setLayout(null);
@@ -297,6 +313,7 @@ public class RegistroHospede extends JFrame {
 		labelSalvar.setFont(new Font("Roboto", Font.PLAIN, 18));
 		labelSalvar.setBounds(0, 0, 122, 35);
 		btnsalvar.add(labelSalvar);
+		
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 489, 634);
@@ -314,6 +331,8 @@ public class RegistroHospede extends JFrame {
 		panel.add(logo);
 		logo.setIcon(new ImageIcon(RegistroHospede.class.getResource("/imagenes/Ha-100px.png")));
 	}
+	
+	
 	
 	//Código que permite movimentar a janela pela tela seguindo a posição de "x" y "y"
 	 private void headerMousePressed(java.awt.event.MouseEvent evt) {
