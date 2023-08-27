@@ -14,7 +14,7 @@ public class Hospede {
 	private Nacionalidade nacionalidade;
 	private String telefone;
 	
-	
+
 	public Hospede(Integer indice,  String nome, String sobrenome, String dataNascimento, Nacionalidade nacionalidade,
 			String telefone) {
 		super();

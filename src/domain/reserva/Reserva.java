@@ -1,6 +1,10 @@
 package domain.reserva;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import domain.formaPagamento.FormaPagamento;
 import domain.hospede.Hospede;
@@ -8,23 +12,37 @@ import domain.hospede.Hospede;
 public class Reserva {
 
 	Integer id;
-	LocalDateTime dataReserva;
+	Date dataReserva;
+	Date dataSaida;
 	Double valor;
 	FormaPagamento formaPagamento;
 	Hospede hospede;
 	
-	public Reserva(Integer id, LocalDateTime dataReserva, Double valor, FormaPagamento formaPagamento,
+	public Reserva(Date date, Date date2,Double valor, FormaPagamento formaPagamento,
 			Hospede hospede) {
 		super();
-		this.id = id;
-		this.dataReserva = dataReserva;
+		this.id = null;
+		this.dataReserva = date;
+		this.dataSaida = date2;
 		this.valor = valor;
 		this.formaPagamento = formaPagamento;
 		this.hospede = hospede;
+		this.valor = Reserva.calcularValor(this.dataReserva, this.dataSaida);
 	}
 	
+	public Reserva(Date date, Date date2,Double valor, FormaPagamento formaPagamento) {
+		super();
+		this.id = null;
+		this.dataReserva = date;
+		this.dataSaida = date2;
+		this.valor = valor;
+		this.formaPagamento = formaPagamento;
+		this.hospede = null;
+	}
 	
-	
+	public static Double calcularValor(Date inicio, Date fim) {
+		return (double) (TimeUnit.DAYS.convert(inicio.getTime() - fim.getTime(), TimeUnit.MILLISECONDS) * 120);
+	}
 	
 	public Integer getId() {
 		return id;
@@ -32,18 +50,33 @@ public class Reserva {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public LocalDateTime getDataReserva() {
+	public Date getDataReserva() {
 		return dataReserva;
 	}
-	public void setDataReserva(LocalDateTime dataReserva) {
+	public void setDataReserva(Date dataReserva) {
 		this.dataReserva = dataReserva;
 	}
+	public Date getDataSaida() {
+		return dataSaida;
+	}
+
+
+
+
+	public void setDataSaida(Date dataSaida) {
+		this.dataSaida = dataSaida;
+	}
+
+
+
+
 	public Double getValor() {
+		
+		
+		
 		return valor;
 	}
-	public void setValor(Double valor) {
-		this.valor = valor;
-	}
+
 	public FormaPagamento getFormaPagamento() {
 		return formaPagamento;
 	}

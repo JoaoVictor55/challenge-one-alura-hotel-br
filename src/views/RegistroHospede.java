@@ -27,11 +27,11 @@ import com.toedter.calendar.JDateChooser;
 
 import controller.HospedeController;
 import controller.NacionalidadeController;
-import dao.NacionalidadeDAO;
+import controller.ReservaController;
 import domain.hospede.DadosCadastroHospede;
 import domain.nacionalidade.Nacionalidade;
+import domain.reserva.Reserva;
 
-import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class RegistroHospede extends JFrame {
@@ -45,6 +45,8 @@ public class RegistroHospede extends JFrame {
 	private JComboBox<Format> txtNacionalidade;
 	private JLabel labelExit;
 	private JLabel labelAtras;
+	public Reserva reserva;
+	private ReservaController reservaController;
 	int xMouse, yMouse;
 	
 	//classes para cadastro de hospede
@@ -74,6 +76,7 @@ public class RegistroHospede extends JFrame {
 		
 		//inicializa o controller
 		hospedeController = new HospedeController();
+		reservaController = new ReservaController();
 		List<Nacionalidade> nacionalidades = new NacionalidadeController().listarNacionalidades();
 		/*List<Nacionalidade> nacionalidades = new ArrayList<Nacionalidade>();
 		nacionalidades.add(new Nacionalidade(74, "Brasileiro"));
@@ -315,7 +318,16 @@ public class RegistroHospede extends JFrame {
 						
 				DadosCadastroHospede cadastroHospede = new DadosCadastroHospede(txtNome.getText(), txtSobrenome.getText(),new SimpleDateFormat("yyyy-MM-dd").format(txtDataN.getDate()) ,nacionalidades.get(txtNacionalidade.getSelectedIndex()) ,txtTelefone.getText() ,1 );
 				//System.out.println(cadastroHospede);
-				hospedeController.cadastrarHospede(cadastroHospede);
+				
+				if(reserva != null) {
+					reserva.setHospede(hospedeController.cadastrarHospede(cadastroHospede));
+					reservaController.salvar(reserva);
+				}
+				else {
+					hospedeController.cadastrarHospede(cadastroHospede);
+				}
+				
+				
 			}
 		});
 		btnsalvar.setLayout(null);

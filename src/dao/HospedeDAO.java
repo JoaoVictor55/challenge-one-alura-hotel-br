@@ -6,12 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import domain.hospede.DadosCadastroHospede;
 import domain.hospede.Hospede;
 import domain.nacionalidade.Nacionalidade;
 
