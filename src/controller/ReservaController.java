@@ -7,6 +7,7 @@ import connection.ConnectionFactory;
 import dao.ReversaDAO;
 import domain.hospede.Hospede;
 import domain.reserva.Reserva;
+import domain.reserva.ReservaDetalhes;
 
 public class ReservaController {
 
@@ -32,8 +33,13 @@ public class ReservaController {
 		this.dao.atualizar(id, dataEntrada, dataSaida, valor, hospede);
 	}
 	
-	public List<Reserva> listar(){
+	public List<Reserva> listarPorSobreNome(String sobrenome){
 		
-		return this.dao.listarReserva();
+		return this.dao.buscarReservaPorSobrenome(sobrenome);
+	}
+	
+	public Reserva listarPorId(Integer id){
+		
+		return this.dao.buscarReservaPorId(id);
 	}
 }

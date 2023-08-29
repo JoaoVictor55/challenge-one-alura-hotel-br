@@ -6,6 +6,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import controller.ReservaController;
+import domain.hospede.Hospede;
+import domain.reserva.Reserva;
+import domain.reserva.ReservaDetalhes;
+
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ImageIcon;
@@ -20,6 +26,8 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class Buscar extends JFrame {
@@ -32,6 +40,9 @@ public class Buscar extends JFrame {
 	private DefaultTableModel modeloHospedes;
 	private JLabel labelAtras;
 	private JLabel labelExit;
+	private ReservaController reservaController;
+	private Integer idBuscado;
+	private String sobrenomeBuscado;
 	int xMouse, yMouse;
 
 	/**
@@ -64,6 +75,11 @@ public class Buscar extends JFrame {
 		contentPane.setLayout(null);
 		setLocationRelativeTo(null);
 		setUndecorated(true);
+		
+		idBuscado = null;
+		sobrenomeBuscado = "";
+		
+		reservaController = new ReservaController();
 		
 		txtBuscar = new JTextField();
 		txtBuscar.setBounds(536, 127, 193, 31);
@@ -208,7 +224,65 @@ public class Buscar extends JFrame {
 		btnbuscar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
+		
+				try {
+					
+					Integer id = Integer.parseInt(txtBuscar.getText());
+					
+					if(id != idBuscado) {
+						idBuscado = id;
+					}
+					else {
+						return;
+					}
+					
+					Reserva resultado = reservaController.listarPorId(idBuscado);
+					Hospede hospede = resultado.getHospede();
+					
+					modelo.addRow(new String[] {resultado.getId().toString(),
+							resultado.getDataReserva().toString(), resultado.getDataSaida().toString(),
+							resultado.getValor().toString(), resultado.getFormaPagamento().getNome()});
+					
+					
+					modeloHospedes.addRow(new String[] {hospede.getIndice().toString(), hospede.getNome(),
+							hospede.getSobrenome(), hospede.getDataNascimento().toString(),
+							hospede.getNacionalidade().getNome(), hospede.getTelefone(),
+							resultado.getId().toString()});
+					
+				}catch(NumberFormatException foo) {
+					
+					String sobrenome = txtBuscar.getText();
+					
+					if(!sobrenomeBuscado.equals(sobrenome)) {
+						
+						sobrenomeBuscado = sobrenome;
+					}else {
+						
+						return;
+					}
+					
+					List<Reserva> resultado = reservaController.listarPorSobreNome(sobrenomeBuscado);
+					
+					
+					
+					for(Reserva res : resultado) {
+						
+						modelo.addRow(new String[] {res.getId().toString(),
+								res.getDataReserva().toString(), res.getDataSaida().toString(),
+								res.getValor().toString(), res.getFormaPagamento().getNome()});	
+					}
+					
+					for(Reserva res : resultado) {
+						
+						Hospede hospede = res.getHospede();
+						
+						modeloHospedes.addRow(new String[] {hospede.getIndice().toString(), hospede.getNome(),
+								hospede.getSobrenome(), hospede.getDataNascimento().toString(),
+								hospede.getNacionalidade().getNome(), hospede.getTelefone(),
+								res.getId().toString()});
+					}
+				}
+								
 			}
 		});
 		btnbuscar.setLayout(null);

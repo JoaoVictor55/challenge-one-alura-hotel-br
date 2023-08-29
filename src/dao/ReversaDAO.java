@@ -13,6 +13,7 @@ import domain.formaPagamento.FormaPagamento;
 import domain.hospede.Hospede;
 import domain.nacionalidade.Nacionalidade;
 import domain.reserva.Reserva;
+import domain.reserva.ReservaDetalhes;
 
 public class ReversaDAO {
 
@@ -24,6 +25,7 @@ public class ReversaDAO {
 				+ "hos_id_tbl_hospede, res_forma_pagamento)"
 				+ "values(?, ?, ?, ?, ?)"),
 		
+		
 		DETALHAR_RESERVA("select res_id, res_data_entrada, res_valor, forma_pagamento, pagamentoID, "
 				+ "data_saida, pagamentoID from vw_detalhar_reserva;"),
 		
@@ -32,6 +34,26 @@ public class ReversaDAO {
 				+ "data_saida, hos_id, hos_nome, "
 				+ "hos_sobrenome, hos_data_nascimento, hos_nacionalidade, nac_nome, hos_telefone "
 				+ "from vw_detalhar_reserva;"),
+		
+		DETALHAR_RESERVA_FORMA_PAGAMENTO_SOBRENOME("select res_id, res_data_entrada, res_valor, "
+				+ "tbl_forma_pagamento.nome as forma_pagamento,  tbl_forma_pagamento.id as pagamentoID, "
+				+ "data_saida, hos_id, hos_nome, hos_sobrenome, hos_data_nascimento, hos_nacionalidade, "
+				+ "nac_nome, hos_telefone, nac_id  from tbl_reserva "
+				+ "inner join tbl_forma_pagamento on tbl_forma_pagamento.id = tbl_reserva.res_forma_pagamento "
+				+ "inner join vw_detalhar_hospede on vw_detalhar_hospede.hos_id = tbl_reserva.hos_id_tbl_hospede "
+				+ "and vw_detalhar_hospede.hos_sobrenome = ?;"),
+		
+		
+		DETALHAR_RESERVA_FORMA_PAGAMENTO_RESERVA_ID("select res_id, res_data_entrada, res_valor, "
+				+ "tbl_forma_pagamento.nome as forma_pagamento,  tbl_forma_pagamento.id as pagamentoID, "
+				+ "data_saida, hos_id, hos_nome, hos_sobrenome, hos_data_nascimento, hos_nacionalidade, "
+				+ "nac_nome, hos_telefone, nac_id  from tbl_reserva "
+				+ "inner join tbl_forma_pagamento on tbl_forma_pagamento.id = tbl_reserva.res_forma_pagamento "
+				+ "inner join vw_detalhar_hospede on vw_detalhar_hospede.hos_id = tbl_reserva.hos_id_tbl_hospede "
+				+ "where res_id = ?"
+				),
+		
+		
 		
 		DELETAR_POR_ID("delete from tbl_reserva where res_id = ?");
 
@@ -111,7 +133,81 @@ public class ReversaDAO {
 		}
 	}
 	
+	public List<Reserva> buscarReservaPorSobrenome(String sobrenome){
+		
+		try {
+			
+			List<Reserva> reservas = new ArrayList<Reserva>();
+			
+			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS_SIMPLES.DETALHAR_RESERVA_FORMA_PAGAMENTO_SOBRENOME.toString())){
+				
+				pstm.setString(1, sobrenome);
+				
+				pstm.execute();
+				
+				try(ResultSet rst = pstm.getResultSet()){
+					
+					while(rst.next()) {
+						
+						FormaPagamento formaPagamento = new FormaPagamento(rst.getInt(5), rst.getString(4));
+						Nacionalidade nacionalidade = new Nacionalidade(rst.getInt(14), rst.getString(12));
+						Hospede hospede = new Hospede(rst.getInt(7), rst.getString(8), rst.getString(9), 
+								rst.getDate(10).toString(), nacionalidade, rst.getString(13));
+						
+						Reserva reserva = new Reserva( rst.getDate(2), rst.getDate(6), rst.getDouble(3), 
+								formaPagamento, hospede);
+						reserva.setId(rst.getInt(1));
+						
+						reservas.add(reserva);
+					}
+				}
+			}
+			
+			return reservas;
+		}
+		catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	
+	
+	public Reserva buscarReservaPorId(Integer id) {
+		// TODO Auto-generated method stub
+		try {
+			
+			Reserva reserva = null;
+			
+			try(PreparedStatement pstm = connection.prepareStatement(SQL_COMANDOS_SIMPLES.DETALHAR_RESERVA_FORMA_PAGAMENTO_RESERVA_ID.toString())){
+				
+				pstm.setInt(1, id);
+				
+				pstm.execute();
+				
+				try(ResultSet rst = pstm.getResultSet()){
+					
+				while(rst.next()) {	
+					
+					FormaPagamento formaPagamento = new FormaPagamento(rst.getInt(5), rst.getString(4));
+					Nacionalidade nacionalidade = new Nacionalidade(rst.getInt(14), rst.getString(12));
+					Hospede hospede = new Hospede(rst.getInt(7), rst.getString(8), rst.getString(9), 
+							rst.getDate(10).toString(), nacionalidade, rst.getString(13));
+					
+					reserva = new Reserva( rst.getDate(2), rst.getDate(6), rst.getDouble(3), 
+							formaPagamento, hospede);
+					reserva.setId(rst.getInt(1));
+					
+				}
+				}
+			}
+			
+			return reserva;
+			
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Deprecated
 	public List<Reserva> listarReserva(){
 		
 		try {
