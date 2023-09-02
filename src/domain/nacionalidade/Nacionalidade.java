@@ -1,5 +1,7 @@
 package domain.nacionalidade;
 
+import domain.formaPagamento.FormaPagamento;
+
 public class Nacionalidade {
 	
 	private Integer id;
@@ -10,8 +12,6 @@ public class Nacionalidade {
 		this.id = id;
 		this.nome = nome;
 	}
-	
-	
 	
 	public Integer getId() {
 		return id;

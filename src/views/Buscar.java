@@ -9,9 +9,13 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import controller.FormaDePagamentoController;
 import controller.HospedeController;
+import controller.NacionalidadeController;
 import controller.ReservaController;
+import domain.formaPagamento.FormaPagamento;
 import domain.hospede.Hospede;
+import domain.nacionalidade.Nacionalidade;
 import domain.reserva.Reserva;
 import domain.reserva.ReservaDetalhes;
 
@@ -45,8 +49,13 @@ public class Buscar extends JFrame {
 	private DefaultTableModel modeloHospedes;
 	private JLabel labelAtras;
 	private JLabel labelExit;
+	
 	private ReservaController reservaController;
 	private HospedeController hospedeController;
+	
+	private FormaDePagamentoController formaPagamentoController;
+	private NacionalidadeController nacionalidadeController;
+	
 	private Integer idBuscado;
 	private String sobrenomeBuscado;
 	int xMouse, yMouse;
@@ -82,11 +91,19 @@ public class Buscar extends JFrame {
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 		
+		List<Hospede> hospedes = new ArrayList<>();
+		
 		idBuscado = null;
 		sobrenomeBuscado = "";
 		
 		reservaController = new ReservaController();
 		hospedeController = new HospedeController();
+		
+		nacionalidadeController = new NacionalidadeController();
+		formaPagamentoController = new FormaDePagamentoController();
+		
+		List<Nacionalidade> nacionalidades = nacionalidadeController.listarNacionalidades();
+		List<FormaPagamento> formaPagamento = formaPagamentoController.listarFormasDePagamento();
 		
 		txtBuscar = new JTextField();
 		txtBuscar.setBounds(536, 127, 193, 31);
@@ -115,8 +132,8 @@ public class Buscar extends JFrame {
 	        @Override
 	        public boolean isCellEditable(int row, int column)
 	        {
-	            // make read only fields except column 0,13,14
-	            return false;
+	            // coluna 4 é não editável
+	            return column != 4;
 	        }
 		});
 		modelo = (DefaultTableModel) tbReservas.getModel();
@@ -126,6 +143,27 @@ public class Buscar extends JFrame {
 		modelo.addColumn("Valor");
 		modelo.addColumn("Forma de Pago");
 		
+		tbReservas.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				if(e.getClickCount() == 2) {
+					
+					Object [] nomes = nacionalidades.stream().map(Nacionalidade::getNome).toArray();
+					
+					String antigo = (String) modelo.getValueAt(tbReservas.getSelectedRow(), 4);
+					
+					String novo = (String) JOptionPane.showInputDialog(null, "Choose retard!", "CHoose, disgraça",JOptionPane.QUESTION_MESSAGE,
+							null,nomes, nomes[0]);
+					
+					modelo.setValueAt((novo == null ? antigo : novo), tbReservas.getSelectedRow(), 4);
+				}
+			}
+		
+		});
+		
+
 		
 		JScrollPane scroll_table = new JScrollPane(tbReservas);
 		panel.addTab("Reservas", new ImageIcon(Buscar.class.getResource("/imagenes/reservado.png")), scroll_table, null);
@@ -271,14 +309,11 @@ public class Buscar extends JFrame {
 			
 			@Override
 			public void mouseClicked(MouseEvent e)  {
+
+				//Object [] nomes = new Object[nacionalidades.size()];
 				
-				
-				String a = (String) JOptionPane.showInputDialog(null, "Choose retard!", "CHoose, disgraça",JOptionPane.QUESTION_MESSAGE,
-						null,new String[] {"Fodase", "Eu"}, "Eu");
-				
-				modelo.setValueAt(a, 0,0);
-				
-				
+				//Hospede selecionado
+							
 				/*
 				Integer linha = tbReservas.getSelectedRow();
 				
