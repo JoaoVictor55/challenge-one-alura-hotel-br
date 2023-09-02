@@ -241,30 +241,38 @@ public class ReversaDAO {
 		
 	}
 	
-	public void atualizar(Integer id, Date dataEntrada, Date dataSaida, Double valor,  Hospede hospede) {
-		
+	private String buildUpdate(Integer id, Date dataEntrada, Date dataSaida, Double valor,  Hospede hospede, FormaPagamento formaPagamento) {
 		if(id == null) {
 			throw new IllegalArgumentException("Id não pode ser nulo");
 		}
 		
 		Boolean argumentosNULL = true;
 		
-		String psql = "update tbl_hospede set";
+		String psql = "update tbl_reserva set";
 		
 		if(dataEntrada != null) {
 			psql += " res_data_entrada=?";
 			argumentosNULL = false;
 		}
 		if(dataSaida != null) {
-			psql += " data_saida?";
+			if(!argumentosNULL) psql += ",";
+			psql += " data_saida=?";
 			argumentosNULL = false;
 		}
 		if(valor != null) {
+			if(!argumentosNULL) psql += ",";
 			psql += " res_valor=?";
 			argumentosNULL = false;
 		}
 		if(hospede != null) {
+			if(!argumentosNULL) psql += ",";
 			psql += " hos_id_tbl_hospede=?";
+			argumentosNULL = false;
+		}
+		
+		if(formaPagamento != null) {
+			if(!argumentosNULL) psql += ",";
+			psql += " res_forma_pagamento=?";
 			argumentosNULL = false;
 		}
 		
@@ -272,7 +280,15 @@ public class ReversaDAO {
 			throw new IllegalArgumentException("Ao menos um dos parâmetros devem ser não nulos");
 		}
 		
-		psql+=" where res_id=?";
+		
+		return psql+" where res_id=?;"; 
+		
+		
+	}
+	
+	public void atualizar(Integer id, Date dataEntrada, Date dataSaida, Double valor,  Hospede hospede, FormaPagamento formaPagamento) {
+		
+		String psql = buildUpdate(id, dataEntrada, dataSaida, valor, hospede, formaPagamento);
 		
 		try {
 			
@@ -293,6 +309,9 @@ public class ReversaDAO {
 				if(hospede != null) {
 					pstm.setInt(atual++, hospede.getIndice());
 					
+				}
+				if(formaPagamento != null) {
+					pstm.setInt(atual++, formaPagamento.getId());
 				}
 
 				pstm.setInt(atual, id);

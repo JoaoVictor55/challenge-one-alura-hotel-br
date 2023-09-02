@@ -5,6 +5,7 @@ import java.util.List;
 
 import connection.ConnectionFactory;
 import dao.ReversaDAO;
+import domain.formaPagamento.FormaPagamento;
 import domain.hospede.Hospede;
 import domain.reserva.Reserva;
 import domain.reserva.ReservaDetalhes;
@@ -28,9 +29,9 @@ public class ReservaController {
 		this.dao.deletar(reservaID);
 	}
 	
-	public void atualizar(Integer id, Date dataEntrada, Date dataSaida, Double valor,  Hospede hospede) {
+	public void atualizar(Integer id, Date dataEntrada, Date dataSaida, Double valor,  Hospede hospede, FormaPagamento formaPagamento) {
 		
-		this.dao.atualizar(id, dataEntrada, dataSaida, valor, hospede);
+		this.dao.atualizar(id, dataEntrada, dataSaida, valor, hospede, formaPagamento);
 	}
 	
 	public List<Reserva> listarPorSobreNome(String sobrenome){

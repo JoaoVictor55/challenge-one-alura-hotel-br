@@ -1,5 +1,7 @@
 package domain.formaPagamento;
 
+import java.util.Objects;
+
 public class FormaPagamento {
 
 	Integer id;
@@ -29,5 +31,13 @@ public class FormaPagamento {
 		
 		return this.nome;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nome);
+	}
+
+
 	
+
 }

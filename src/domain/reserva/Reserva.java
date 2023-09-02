@@ -2,9 +2,6 @@ package domain.reserva;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import domain.formaPagamento.FormaPagamento;
 import domain.hospede.Hospede;
@@ -41,7 +38,11 @@ public class Reserva {
 	}
 	
 	public static Double calcularValor(Date inicio, Date fim) {
-		return (double) (TimeUnit.DAYS.convert(inicio.getTime() - fim.getTime(), TimeUnit.MILLISECONDS) * 120);
+		
+		if(inicio == null || fim == null) {
+			return null;
+		}
+		return (double) Math.abs((TimeUnit.DAYS.convert(inicio.getTime() - fim.getTime(), TimeUnit.MILLISECONDS) * 120));
 	}
 	
 	public Integer getId() {
@@ -67,13 +68,20 @@ public class Reserva {
 		this.dataSaida = dataSaida;
 	}
 
-
+	
+	public void atualizarValor() {
+		
+		this.valor = calcularValor(dataReserva, dataSaida);
+	}
 
 
 	public Double getValor() {
 		
 		
 		
+		if(valor == null) {
+			atualizarValor();
+		}
 		return valor;
 	}
 
@@ -89,5 +97,6 @@ public class Reserva {
 	public void setHospede(Hospede hospede) {
 		this.hospede = hospede;
 	}
+
 	
 }

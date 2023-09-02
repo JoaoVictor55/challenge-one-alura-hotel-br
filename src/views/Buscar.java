@@ -19,6 +19,7 @@ import domain.nacionalidade.Nacionalidade;
 import domain.reserva.Reserva;
 import domain.reserva.ReservaDetalhes;
 
+
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ImageIcon;
@@ -35,8 +36,12 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 @SuppressWarnings("serial")
 public class Buscar extends JFrame {
@@ -52,6 +57,10 @@ public class Buscar extends JFrame {
 	
 	private ReservaController reservaController;
 	private HospedeController hospedeController;
+	private Integer reservaMudou = -1;
+	private Boolean hospedeMudou = false;
+	
+	private Reserva novaReserva; 
 	
 	private FormaDePagamentoController formaPagamentoController;
 	private NacionalidadeController nacionalidadeController;
@@ -91,8 +100,8 @@ public class Buscar extends JFrame {
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 		
-		List<Hospede> hospedes = new ArrayList<>();
-		
+		//List<Hospede> hospedes = new ArrayList<>();
+				
 		idBuscado = null;
 		sobrenomeBuscado = "";
 		
@@ -104,6 +113,7 @@ public class Buscar extends JFrame {
 		
 		List<Nacionalidade> nacionalidades = nacionalidadeController.listarNacionalidades();
 		List<FormaPagamento> formaPagamento = formaPagamentoController.listarFormasDePagamento();
+		novaReserva = new Reserva(null, null, null, null,null);
 		
 		txtBuscar = new JTextField();
 		txtBuscar.setBounds(536, 127, 193, 31);
@@ -147,23 +157,97 @@ public class Buscar extends JFrame {
 		
 			@Override
 			public void mouseClicked(MouseEvent e) {
+			
+				//System.out.println(tbReservas.getSelectedColumn()+" "+tbReservas.getSelectedRow());
 				
-				if(e.getClickCount() == 2) {
+			
+				if(e.getClickCount() == 2 && tbReservas.getSelectedColumn() == 4) {
 					
-					Object [] nomes = nacionalidades.stream().map(Nacionalidade::getNome).toArray();
+					Object [] nomes = formaPagamento.stream().map(FormaPagamento::getNome).toArray();
 					
 					String antigo = (String) modelo.getValueAt(tbReservas.getSelectedRow(), 4);
 					
 					String novo = (String) JOptionPane.showInputDialog(null, "Choose retard!", "CHoose, disgraça",JOptionPane.QUESTION_MESSAGE,
 							null,nomes, nomes[0]);
 					
-					modelo.setValueAt((novo == null ? antigo : novo), tbReservas.getSelectedRow(), 4);
+					//modelo.setValueAt((novo == null ? antigo : novo), tbReservas.getSelectedRow(), 4);
+					
+					if(novo != null) {
+						
+						for(FormaPagamento f : formaPagamento) {
+							
+							if(novo == f.getNome()) {
+								novaReserva.setFormaPagamento(f);
+								break;
+							}
+						}
+						
+						modelo.setValueAt(novo, tbReservas.getSelectedRow(), 4);
+						reservaMudou = (Integer) modelo.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn());
+					}else {
+						
+						modelo.setValueAt(antigo, tbReservas.getSelectedRow(), 4);
+					}
+					
 				}
 			}
 		
 		});
 		
-
+		modelo.addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				
+				//novaReserva.setDataReserva(null);
+				Integer rowEditor = tbReservas.getEditingRow();
+				Integer columnEditor = tbReservas.getEditingColumn();
+				boolean dataAtualizada = false;
+				
+				if(columnEditor == -1 || rowEditor == -1) {
+					return;
+				}
+				
+				switch(columnEditor) {
+				
+				//data checkin
+				case 1:
+					
+					try {
+						
+						novaReserva.setDataReserva(new SimpleDateFormat("yyyy-MM-dd").parse((String)modelo.getValueAt(rowEditor, columnEditor)));
+						dataAtualizada = true;
+						
+						
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(panel, "Data inválida", "Erro", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				break;
+				
+				case 2:
+					try {
+						
+						novaReserva.setDataSaida(new SimpleDateFormat("yyyy-MM-dd").parse((String)modelo.getValueAt(rowEditor, columnEditor)));
+						dataAtualizada = true;
+						
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(panel, "Data inválida", "Erro", JOptionPane.ERROR_MESSAGE);
+					}
+				break;
+				
+				
+				}
+				
+				if(dataAtualizada) {
+					novaReserva.atualizarValor();
+					reservaMudou = Integer.parseInt((String)modelo.getValueAt(tbReservas.getSelectedRow(), 0));
+				}
+				
+			}
+		});
 		
 		JScrollPane scroll_table = new JScrollPane(tbReservas);
 		panel.addTab("Reservas", new ImageIcon(Buscar.class.getResource("/imagenes/reservado.png")), scroll_table, null);
@@ -310,6 +394,40 @@ public class Buscar extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e)  {
 
+				if(reservaMudou != -1) {
+					
+					Date buffer = novaReserva.getDataReserva();
+					java.sql.Date dataReserva = null;
+					java.sql.Date dataSaida = null;
+					
+					if(buffer != null) {
+						
+						dataReserva  = new java.sql.Date(buffer.getTime());
+						System.out.println(buffer+" - "+dataReserva);
+						
+					}
+					 
+						
+					
+					buffer = novaReserva.getDataSaida();
+					if(buffer != null) {
+						
+						
+						dataSaida = new java.sql.Date(buffer.getTime());
+						System.out.println(buffer+" - "+dataSaida);
+						
+					}
+						
+					
+					reservaController.atualizar(reservaMudou,dataReserva, dataSaida, novaReserva.getValor(), novaReserva.getHospede(), novaReserva.getFormaPagamento());
+					
+					
+					modelo.setRowCount(0);
+					printarHospedeReserva();
+				}
+				
+				
+				
 				//Object [] nomes = new Object[nacionalidades.size()];
 				
 				//Hospede selecionado
