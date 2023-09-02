@@ -34,7 +34,7 @@ public class TesteConexao {
 		Statement insert = connection.createStatement();
 		insert.execute("INSERT INTO tbl_hospede(hos_nome, hos_sobrenome, hos_data_nascimento,\n"
 				+ "hos_nacionalidade, hos_telefone)"
-				+ "values('eu', 'da silva', '2020-12-10', 1, 1245)");
+				+ "values('eu', 'da silva', '2020-12-10', 74, 1245)");
 		
 		System.out.println("finalizando...");
 		connection.close();

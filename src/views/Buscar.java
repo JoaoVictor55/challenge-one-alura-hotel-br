@@ -5,8 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import controller.HospedeController;
 import controller.ReservaController;
 import domain.hospede.Hospede;
 import domain.reserva.Reserva;
@@ -17,6 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTabbedPane;
 import java.awt.Toolkit;
@@ -41,6 +46,7 @@ public class Buscar extends JFrame {
 	private JLabel labelAtras;
 	private JLabel labelExit;
 	private ReservaController reservaController;
+	private HospedeController hospedeController;
 	private Integer idBuscado;
 	private String sobrenomeBuscado;
 	int xMouse, yMouse;
@@ -80,6 +86,7 @@ public class Buscar extends JFrame {
 		sobrenomeBuscado = "";
 		
 		reservaController = new ReservaController();
+		hospedeController = new HospedeController();
 		
 		txtBuscar = new JTextField();
 		txtBuscar.setBounds(536, 127, 193, 31);
@@ -103,12 +110,23 @@ public class Buscar extends JFrame {
 		tbReservas = new JTable();
 		tbReservas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tbReservas.setFont(new Font("Roboto", Font.PLAIN, 16));
+		tbReservas.setModel(new DefaultTableModel() {
+			
+	        @Override
+	        public boolean isCellEditable(int row, int column)
+	        {
+	            // make read only fields except column 0,13,14
+	            return false;
+	        }
+		});
 		modelo = (DefaultTableModel) tbReservas.getModel();
 		modelo.addColumn("Numero de Reserva");
 		modelo.addColumn("Data Check In");
 		modelo.addColumn("Data Check Out");
 		modelo.addColumn("Valor");
 		modelo.addColumn("Forma de Pago");
+		
+		
 		JScrollPane scroll_table = new JScrollPane(tbReservas);
 		panel.addTab("Reservas", new ImageIcon(Buscar.class.getResource("/imagenes/reservado.png")), scroll_table, null);
 		scroll_table.setVisible(true);
@@ -224,66 +242,14 @@ public class Buscar extends JFrame {
 		btnbuscar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-		
-				try {
+				
+				if(!printarHospedeReserva()) {
 					
-					Integer id = Integer.parseInt(txtBuscar.getText());
-					
-					if(id != idBuscado) {
-						idBuscado = id;
-					}
-					else {
-						return;
-					}
-					
-					Reserva resultado = reservaController.listarPorId(idBuscado);
-					Hospede hospede = resultado.getHospede();
-					
-					modelo.addRow(new String[] {resultado.getId().toString(),
-							resultado.getDataReserva().toString(), resultado.getDataSaida().toString(),
-							resultado.getValor().toString(), resultado.getFormaPagamento().getNome()});
-					
-					
-					modeloHospedes.addRow(new String[] {hospede.getIndice().toString(), hospede.getNome(),
-							hospede.getSobrenome(), hospede.getDataNascimento().toString(),
-							hospede.getNacionalidade().getNome(), hospede.getTelefone(),
-							resultado.getId().toString()});
-					
-				}catch(NumberFormatException foo) {
-					
-					String sobrenome = txtBuscar.getText();
-					
-					if(!sobrenomeBuscado.equals(sobrenome)) {
-						
-						sobrenomeBuscado = sobrenome;
-					}else {
-						
-						return;
-					}
-					
-					List<Reserva> resultado = reservaController.listarPorSobreNome(sobrenomeBuscado);
-					
-					
-					
-					for(Reserva res : resultado) {
-						
-						modelo.addRow(new String[] {res.getId().toString(),
-								res.getDataReserva().toString(), res.getDataSaida().toString(),
-								res.getValor().toString(), res.getFormaPagamento().getNome()});	
-					}
-					
-					for(Reserva res : resultado) {
-						
-						Hospede hospede = res.getHospede();
-						
-						modeloHospedes.addRow(new String[] {hospede.getIndice().toString(), hospede.getNome(),
-								hospede.getSobrenome(), hospede.getDataNascimento().toString(),
-								hospede.getNacionalidade().getNome(), hospede.getTelefone(),
-								res.getId().toString()});
-					}
+					JOptionPane.showMessageDialog(contentPane, "hospede ou reserva não encontradas");
 				}
 								
 			}
+
 		});
 		btnbuscar.setLayout(null);
 		btnbuscar.setBackground(new Color(12, 138, 199));
@@ -299,6 +265,39 @@ public class Buscar extends JFrame {
 		lblBuscar.setFont(new Font("Roboto", Font.PLAIN, 18));
 		
 		JPanel btnEditar = new JPanel();
+		
+		
+		btnEditar.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e)  {
+				
+				
+				String a = (String) JOptionPane.showInputDialog(null, "Choose retard!", "CHoose, disgraça",JOptionPane.QUESTION_MESSAGE,
+						null,new String[] {"Fodase", "Eu"}, "Eu");
+				
+				modelo.setValueAt(a, 0,0);
+				
+				
+				/*
+				Integer linha = tbReservas.getSelectedRow();
+				
+				if(linha == -1) {
+					linha = tbHospedes.getSelectedRow();
+					
+					if(linha == -1) {
+						return ; //o usuário não selecionou nada
+					}
+					
+					
+					
+				}
+
+			*/	
+			}
+		});
+		
+		
 		btnEditar.setLayout(null);
 		btnEditar.setBackground(new Color(12, 138, 199));
 		btnEditar.setBounds(635, 508, 122, 35);
@@ -313,6 +312,53 @@ public class Buscar extends JFrame {
 		btnEditar.add(lblEditar);
 		
 		JPanel btnDeletar = new JPanel();
+		
+		btnDeletar.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseClicked(MouseEvent e)  {
+				
+				Integer linha = tbHospedes.getSelectedRow();
+				
+				if(linha == -1) {
+					
+					if(linha == -1) {
+						
+						return ;
+					}
+					
+					linha = tbReservas.getSelectedRow();
+					
+					Integer reservaId = Integer.parseInt(tbReservas.getModel().getValueAt(linha, 0).toString());
+					
+					reservaController.deletar(reservaId);
+					modelo.setRowCount(0);
+					
+					if (!printarHospedeReserva()) {
+						
+						JOptionPane.showMessageDialog(contentPane, "Não há mais reservas com essa identificação");
+					}
+					
+		
+					
+				}
+				else {
+				Integer hospedeId = Integer.parseInt(tbHospedes.getModel().getValueAt(linha, 0).toString());
+
+				hospedeController.deletarHospede(hospedeId);
+				modeloHospedes.setRowCount(0);
+				modelo.setRowCount(0);
+				
+				if(!printarHospedeReserva()) {
+					
+					JOptionPane.showMessageDialog(contentPane, "Não há mais hospedes com esse sobrenome");
+				}
+				
+				}
+				
+			}
+		});
+		
 		btnDeletar.setLayout(null);
 		btnDeletar.setBackground(new Color(12, 138, 199));
 		btnDeletar.setBounds(767, 508, 122, 35);
@@ -339,4 +385,62 @@ public class Buscar extends JFrame {
 	        int y = evt.getYOnScreen();
 	        this.setLocation(x - xMouse, y - yMouse);
 }
+	    
+	private Boolean printarHospedeReserva() {
+		
+		try {
+			
+			
+			Integer id = Integer.parseInt(txtBuscar.getText());
+			
+			try {
+				
+				
+				Reserva resultado = reservaController.listarPorId(id);
+				Hospede hospede = resultado.getHospede();
+				
+				modelo.addRow(new String[] {resultado.getId().toString(),
+						resultado.getDataReserva().toString(), resultado.getDataSaida().toString(),
+						resultado.getValor().toString(), resultado.getFormaPagamento().getNome()});
+				
+				
+				modeloHospedes.addRow(new String[] {hospede.getIndice().toString(), hospede.getNome(),
+						hospede.getSobrenome(), hospede.getDataNascimento().toString(),
+						hospede.getNacionalidade().getNome(), hospede.getTelefone(),
+						resultado.getId().toString()});
+				
+			}
+			catch(NullPointerException e) {
+				//JOptionPane.showMessageDialog(contentPane, "Reserva não encontrada");
+				return false; 
+			}
+
+			
+		}catch(NumberFormatException foo) {
+			
+			List<Reserva> resultado = reservaController.listarPorSobreNome(txtBuscar.getText());
+			
+			for(Reserva res : resultado) {
+				
+				modelo.addRow(new String[] {res.getId().toString(),
+						res.getDataReserva().toString(), res.getDataSaida().toString(),
+						res.getValor().toString(), res.getFormaPagamento().getNome()});	
+		
+				Hospede hospede = res.getHospede();
+				
+				modeloHospedes.addRow(new String[] {hospede.getIndice().toString(), hospede.getNome(),
+						hospede.getSobrenome(), hospede.getDataNascimento().toString(),
+						hospede.getNacionalidade().getNome(), hospede.getTelefone(),
+						res.getId().toString()});
+			}
+		
+		return !resultado.isEmpty();
+	}
+		
+	return true;
+		
+		
+	    
 }
+	}
+	

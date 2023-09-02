@@ -104,6 +104,7 @@ public class ReversaDAO {
 				
 				pstm.setDate(1, new java.sql.Date(reserva.getDataReserva().getTime()));
 				pstm.setDate(2, new java.sql.Date(reserva.getDataSaida().getTime()));
+				System.out.println(reserva.getValor());
 				pstm.setDouble(3, reserva.getValor());
 				pstm.setInt(5, reserva.getFormaPagamento().getId());
 				if(reserva.getHospede() != null) {
