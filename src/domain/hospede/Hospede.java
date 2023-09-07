@@ -133,9 +133,10 @@ public class Hospede {
 
 	@Override
 	public String toString() {
+ 
 		return String.format("Hospede: nome %s,  sobrenome %s, telefone %s, "
 				+ "data de nascimento %s, nacionalidade %s",
-				nome, sobrenome, telefone, dataNascimento,nacionalidade.getNome());
+				nome, sobrenome, telefone, dataNascimento,(nacionalidade == null ? null : nacionalidade.getNome()));
 	}
 	
 	

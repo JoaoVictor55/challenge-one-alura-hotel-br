@@ -99,40 +99,7 @@ public class HospedeDAO {
 	public void atualizar(Integer id, String nome, String sobrenome, String datanascimento, Nacionalidade nacionalidade,
 			String telefone) {
 		
-		if(id == null) {
-			throw new IllegalArgumentException("Id não pode ser nulo");
-		}
-		
-		Boolean argumentosNULL = true;
-		
-		String psql = "update tbl_hospede set";
-		
-		if(nome != null) {
-			psql += " hos_nome=?";
-			argumentosNULL = false;
-		}
-		if(sobrenome != null) {
-			psql += " hos_sobrenome=?";
-			argumentosNULL = false;
-		}
-		if(datanascimento != null) {
-			psql += " hos_data_nascimento=?";
-			argumentosNULL = false;
-		}
-		if(nacionalidade != null) {
-			psql += " hos_nacionalidade=?";
-			argumentosNULL = false;
-		}
-		if(telefone != null) {
-			psql += " hos_telefone=?";
-			argumentosNULL = false;
-		}
-		
-		if(argumentosNULL) {
-			throw new IllegalArgumentException("Ao menos um dos parâmetros devem ser não nulos");
-		}
-		
-		psql+=" where hos_id=?";
+		String psql = buildUpdate(id, nome, sobrenome, datanascimento, nacionalidade, telefone);
 		
 		try {
 			
@@ -169,6 +136,49 @@ public class HospedeDAO {
 		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	private String buildUpdate(Integer id, String nome, String sobrenome, String datanascimento,
+			Nacionalidade nacionalidade, String telefone) {
+		if(id == null) {
+			throw new IllegalArgumentException("Id não pode ser nulo");
+		}
+		
+		Boolean argumentosNULL = true;
+		
+		String psql = "update tbl_hospede set";
+		
+		if(nome != null) {
+			psql += " hos_nome=?";
+			argumentosNULL = false;
+		}
+		if(sobrenome != null) {
+			if(argumentosNULL != null) psql += ", ";
+			psql += " hos_sobrenome=?";
+			argumentosNULL = false;
+		}
+		if(datanascimento != null) {
+			if(argumentosNULL != null) psql += ", ";
+			psql += " hos_data_nascimento=?";
+			argumentosNULL = false;
+		}
+		if(nacionalidade != null) {
+			if(argumentosNULL != null) psql += ", ";
+			psql += " hos_nacionalidade=?";
+			argumentosNULL = false;
+		}
+		if(telefone != null) {
+			psql += " hos_telefone=?";
+			argumentosNULL = false;
+		}
+		
+		if(argumentosNULL) {
+			throw new IllegalArgumentException("Ao menos um dos parâmetros devem ser não nulos");
+		}
+		
+		psql+=" where hos_id=?";
+		return psql;
 	}
 
 	public void salvar(Hospede hospede) {

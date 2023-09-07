@@ -41,7 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
+
 
 @SuppressWarnings("serial")
 public class Buscar extends JFrame {
@@ -58,9 +58,10 @@ public class Buscar extends JFrame {
 	private ReservaController reservaController;
 	private HospedeController hospedeController;
 	private Integer reservaMudou = -1;
-	private Boolean hospedeMudou = false;
+	private Integer hospedeMudou = -1;
 	
 	private Reserva novaReserva; 
+	private Hospede novoHospede;
 	
 	private FormaDePagamentoController formaPagamentoController;
 	private NacionalidadeController nacionalidadeController;
@@ -114,6 +115,7 @@ public class Buscar extends JFrame {
 		List<Nacionalidade> nacionalidades = nacionalidadeController.listarNacionalidades();
 		List<FormaPagamento> formaPagamento = formaPagamentoController.listarFormasDePagamento();
 		novaReserva = new Reserva(null, null, null, null,null);
+		novoHospede = new Hospede();
 		
 		txtBuscar = new JTextField();
 		txtBuscar.setBounds(536, 127, 193, 31);
@@ -142,8 +144,8 @@ public class Buscar extends JFrame {
 	        @Override
 	        public boolean isCellEditable(int row, int column)
 	        {
-	            // coluna 4 é não editável
-	            return column != 4;
+	            // coluna 4 é não editável nem a 0
+	            return column != 4 && column != 0;
 	        }
 		});
 		modelo = (DefaultTableModel) tbReservas.getModel();
@@ -152,7 +154,7 @@ public class Buscar extends JFrame {
 		modelo.addColumn("Data Check Out");
 		modelo.addColumn("Valor");
 		modelo.addColumn("Forma de Pago");
-		
+				
 		tbReservas.addMouseListener(new MouseAdapter() {
 		
 			@Override
@@ -183,7 +185,7 @@ public class Buscar extends JFrame {
 						}
 						
 						modelo.setValueAt(novo, tbReservas.getSelectedRow(), 4);
-						reservaMudou = (Integer) modelo.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn());
+						reservaMudou = Integer.parseInt( (String) modelo.getValueAt(tbReservas.getSelectedRow(), 0));
 					}else {
 						
 						modelo.setValueAt(antigo, tbReservas.getSelectedRow(), 4);
@@ -257,6 +259,16 @@ public class Buscar extends JFrame {
 		tbHospedes = new JTable();
 		tbHospedes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tbHospedes.setFont(new Font("Roboto", Font.PLAIN, 16));
+		tbHospedes.setModel(new DefaultTableModel() {
+			
+	        @Override
+	        public boolean isCellEditable(int row, int column)
+	        {
+	            // coluna 4 é não editável nem a 0
+	            return column != 4 && column != 0;
+	        }
+			
+		});
 		modeloHospedes = (DefaultTableModel) tbHospedes.getModel();
 		modeloHospedes.addColumn("Numero de Hóspede");
 		modeloHospedes.addColumn("Nome");
@@ -265,6 +277,81 @@ public class Buscar extends JFrame {
 		modeloHospedes.addColumn("Nacionalidade");
 		modeloHospedes.addColumn("Telefone");
 		modeloHospedes.addColumn("Numero de Reserva");
+		
+		tbHospedes.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				if(e.getClickCount() == 2 && tbHospedes.getSelectedColumn() == 4) {
+					
+					Object [] hospedesNomes = nacionalidades.stream().map(Nacionalidade::getNome).toArray();
+					
+					String antigo = (String) modeloHospedes.getValueAt(tbHospedes.getSelectedRow(), 4);
+					
+					String novo = (String) JOptionPane.showInputDialog(null, "Choose retard!", "CHoose, disgraça",JOptionPane.QUESTION_MESSAGE,
+							null,hospedesNomes, hospedesNomes[0]);
+					
+					if(novo != null) {
+						
+						for(Nacionalidade n : nacionalidades) {
+							
+							if(novo == n.getNome()) {
+								
+								novoHospede.setNacionalidade(n);
+								break;
+							}
+						}
+						
+						modeloHospedes.setValueAt(novo, tbHospedes.getSelectedRow(), 4);
+						hospedeMudou = (Integer) modeloHospedes.getValueAt(tbHospedes.getSelectedRow(), 0);
+					}else {
+						
+						modeloHospedes.setValueAt(antigo, tbHospedes.getSelectedRow(), 4);
+					}
+
+				}
+			}
+			
+		});
+		
+		modeloHospedes.addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				
+				Integer rowEditor = tbHospedes.getEditingRow();
+				Integer columnEditor = tbHospedes.getEditingColumn();
+				
+				switch(columnEditor) {
+					
+				case 1:
+						
+						novoHospede.setNome((String)modeloHospedes.getValueAt(rowEditor, columnEditor));
+						hospedeMudou = Integer.parseInt((String)modeloHospedes.getValueAt(tbHospedes.getSelectedRow(), 0));
+					break;
+				
+				case 2:
+					novoHospede.setNome((String)modeloHospedes.getValueAt(rowEditor, columnEditor));
+					hospedeMudou = Integer.parseInt((String)modeloHospedes.getValueAt(tbHospedes.getSelectedRow(), 0));
+					break;
+				
+				case 3:
+					novoHospede.setDataNascimento((String)modeloHospedes.getValueAt(rowEditor, columnEditor));
+					hospedeMudou = Integer.parseInt((String)modeloHospedes.getValueAt(tbHospedes.getSelectedRow(), 0));
+					break;
+					
+				case 5:
+					novoHospede.setTelefone((String)modeloHospedes.getValueAt(rowEditor, columnEditor));
+					hospedeMudou = Integer.parseInt((String)modeloHospedes.getValueAt(tbHospedes.getSelectedRow(), 0));
+					break;
+				
+				}
+				
+				
+			}
+		});
+		
 		JScrollPane scroll_tableHuespedes = new JScrollPane(tbHospedes);
 		panel.addTab("Huéspedes", new ImageIcon(Buscar.class.getResource("/imagenes/pessoas.png")), scroll_tableHuespedes, null);
 		scroll_tableHuespedes.setVisible(true);
@@ -421,12 +508,16 @@ public class Buscar extends JFrame {
 					
 					reservaController.atualizar(reservaMudou,dataReserva, dataSaida, novaReserva.getValor(), novaReserva.getHospede(), novaReserva.getFormaPagamento());
 					
-					
-					modelo.setRowCount(0);
-					printarHospedeReserva();
 				}
 				
+				if(hospedeMudou != -1) {
+					System.out.println(hospedeMudou);
+					hospedeController.atualizar(hospedeMudou, novoHospede.getNome(), novoHospede.getSobrenome(), novoHospede.getDataNascimento(), novoHospede.getNacionalidade(), novoHospede.getTelefone());
+				}
 				
+				modelo.setRowCount(0);
+				modeloHospedes.setRowCount(0);
+				printarHospedeReserva();
 				
 				//Object [] nomes = new Object[nacionalidades.size()];
 				
@@ -551,7 +642,7 @@ public class Buscar extends JFrame {
 				
 				Reserva resultado = reservaController.listarPorId(id);
 				Hospede hospede = resultado.getHospede();
-				
+							
 				modelo.addRow(new String[] {resultado.getId().toString(),
 						resultado.getDataReserva().toString(), resultado.getDataSaida().toString(),
 						resultado.getValor().toString(), resultado.getFormaPagamento().getNome()});
