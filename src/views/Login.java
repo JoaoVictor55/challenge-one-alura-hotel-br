@@ -4,6 +4,10 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controller.UserController;
+import domain.user.User;
+
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,7 +33,7 @@ public class Login extends JFrame {
 	private JPasswordField txtSenha;
 	int xMouse, yMouse;
 	private JLabel labelExit;
-
+	private UserController userController;
 	/**
 	 * Launch the application.
 	 */
@@ -60,6 +64,7 @@ public class Login extends JFrame {
 		contentPane.setLayout(null);
 		setLocationRelativeTo(null);
 		
+		userController = new UserController();
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 788, 527);
@@ -235,12 +240,17 @@ public class Login extends JFrame {
 	}
 	
 	private void Login() {
-		 String Usuario= "admin";
-	     String Senha="admin";
-
+		 /*String Usuario= "admin";
+	     String Senha="admin";*/
+		
 	        String senhaa=new String (txtSenha.getPassword());
-
-	        if(txtUsuario.getText().equals(Usuario) && senhaa.equals(Senha)){
+	        String usuarioNome = new String(txtUsuario.getText());
+	        
+	        User usuario = userController.buscarPorNome(usuarioNome);
+	        
+	        
+	        
+	        if(txtUsuario.getText().equals(usuario.getUserName()) && senhaa.equals(usuario.getSenha())){
 	            MenuUsuario menu = new MenuUsuario();
 	            menu.setVisible(true);
 	            dispose();	 
