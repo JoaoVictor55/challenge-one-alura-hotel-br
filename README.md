@@ -37,17 +37,30 @@ Para conexão com o DB, foi feita apenas com o JDBC</p>
 
 <h2>Imagens</h2>
 
-<h3>Tela de login</h3>
-![tela de login](https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/c9247c22-3577-45b9-ac1f-d07fe57fccf8)
+<figure>
+  <figcaption>Tela de Login</figcaption>
+  <img src=https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/c9247c22-3577-45b9-ac1f-d07fe57fccf8 alt="tela de login">
+  
+</figure>
 
-<h3>Menu principal</h3>
-![tela principal](https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/eeb01075-1947-4e2a-bbd8-590c782df55e)
+<figure>
+  <figcaption>Menu principal</figcaption>  
+  <img src="https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/eeb01075-1947-4e2a-bbd8-590c782df55e" alt="menu principal">
+</figure>
 
-<h3>Tela de cadastro de reserva</h3>
-![tela de cadastro reserva](https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/82e4a57c-c23e-4b39-8cc4-5edfee5fd828)
+<figure>
+  <figcaption>Tela de cadastro de reserva</figcaption>
+  <img src="https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/82e4a57c-c23e-4b39-8cc4-5edfee5fd828" alt="tela de cadastro de reserva">
+</figure>
 
-<h3>Tela de cadastro de hóspede</h3>
-![tela de cadastro hospede](https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/7a30a595-0045-4762-9745-9cb8a16bdb01)
 
-<h3>Tela de busca, edição e deleção de hóspedes ou reservas</h3>
-![busca de reserva](https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/27a88bb1-4371-49dc-b7bb-c868b54db61a)
+<figure>
+  <figcaption>Tela de cadastro de hóspede</figcaption>
+  <img src="https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/7a30a595-0045-4762-9745-9cb8a16bdb01" alt="tela de cadastro de hóspede">
+</figure>
+
+<figure>
+  <figcaption>Tela de busca, edição e deleção de hóspedes ou reservas</figcaption>
+  <img src="https://github.com/JoaoVictor55/challenge-one-alura-hotel-br/assets/89023069/27a88bb1-4371-49dc-b7bb-c868b54db61a" alt="Tela de busca, edição e deleção de hóspedes ou reservas">
+</figure>
+
