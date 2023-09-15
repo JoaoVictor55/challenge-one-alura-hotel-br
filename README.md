@@ -35,7 +35,7 @@ Um hospede pode ter várias reservas, mas uma reserva só pode ter um hospede</p
 <p>O banco de dados utilizado foi o MySQL, os scripting sql de criação de tabelas e views estão disponíveis na pasta db.
 Para conexão com o DB, foi feita apenas com o JDBC</p>
 
-<h2>Imagens</h2>
+<h2>Funcionalidades</h2>
 
 <figure>
   <figcaption>Tela de Login</figcaption>
